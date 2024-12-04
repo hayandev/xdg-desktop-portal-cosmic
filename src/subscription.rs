@@ -11,9 +11,7 @@ use tokio::sync::mpsc::Receiver;
 use zbus::{zvariant, Connection};
 
 use crate::{
-    access::Access, config, file_chooser::FileChooser, screencast::ScreenCast,
-    screenshot::Screenshot, wayland, ColorScheme, Contrast, Settings, ACCENT_COLOR_KEY,
-    APPEARANCE_NAMESPACE, COLOR_SCHEME_KEY, CONTRAST_KEY, DBUS_NAME, DBUS_PATH,
+    access::Access, background::Background, config, file_chooser::FileChooser, screencast::ScreenCast, screenshot::Screenshot, wayland, ColorScheme, Contrast, Settings, ACCENT_COLOR_KEY, APPEARANCE_NAMESPACE, COLOR_SCHEME_KEY, CONTRAST_KEY, DBUS_NAME, DBUS_PATH
 };
 
 #[derive(Clone)]
@@ -145,6 +143,7 @@ pub(crate) async fn process_changes(
                     ScreenCast::new(wayland_helper.clone(), tx.clone()),
                 )?
                 .serve_at(DBUS_PATH, Settings::new())?
+                .serve_at(DBUS_PATH, Background::new(wayland_helper.clone()))?
                 .build()
                 .await?;
             _ = output.send(Event::Init(tx)).await;
